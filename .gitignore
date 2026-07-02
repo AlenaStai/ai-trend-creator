@@ -1,0 +1,24 @@
+# Секреты и окружение
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# База данных
+data/*.db
+data/*.sqlite3
+
+# Экспортированные файлы (видео, тяжёлые артефакты)
+export_output/
+*.mp4
+
+# IDE / OS
+.DS_Store
+.vscode/
+.idea/
