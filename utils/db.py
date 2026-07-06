@@ -28,3 +28,33 @@ def init_db() -> None:
     )
     conn.commit()
     conn.close()
+
+
+def save_trends(trends: list[dict]) -> int:
+    """Сохраняет список трендов в таблицу trends. Возвращает число вставленных строк."""
+    if not trends:
+        return 0
+    conn = get_connection()
+    conn.executemany(
+        """
+        INSERT INTO trends (title, source, url, score_raw, published_at)
+        VALUES (:title, :source, :url, :score_raw, :published_at)
+        """,
+        trends,
+    )
+    conn.commit()
+    conn.close()
+    return len(trends)
+
+
+def get_recent_trends(limit: int = 50) -> list[dict]:
+    """Возвращает последние сохранённые тренды, новые сначала."""
+    conn = get_connection()
+    conn.row_factory = sqlite3.Row
+    rows = conn.execute(
+        "SELECT id, title, source, url, score_raw, published_at, created_at "
+        "FROM trends ORDER BY id DESC LIMIT ?",
+        (limit,),
+    ).fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
