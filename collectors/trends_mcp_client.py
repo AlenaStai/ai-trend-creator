@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import os
+from urllib.parse import quote_plus
 
 import requests
 from dotenv import load_dotenv
@@ -25,6 +26,20 @@ FEED_TYPES = [
     "TikTok Trending Hashtags",
     "Reddit Hot Posts",
 ]
+
+# Trends MCP в режиме get_top_trends отдаёт только [ранг, заголовок] — реальной ссылки
+# на источник нет. Строим ссылку на поиск по заголовку на нужной платформе, чтобы можно
+# было быстро посмотреть, что стоит за трендом, до похода в Analyze.
+def _search_url(feed_type: str, title: str) -> str | None:
+    if feed_type == "Google Trends":
+        return f"https://www.google.com/search?q={quote_plus(title)}"
+    if feed_type == "YouTube Trending":
+        return f"https://www.youtube.com/results?search_query={quote_plus(title)}"
+    if feed_type == "TikTok Trending Hashtags":
+        return f"https://www.tiktok.com/tag/{quote_plus(title.lstrip('#'))}"
+    if feed_type == "Reddit Hot Posts":
+        return f"https://www.reddit.com/search/?q={quote_plus(title)}"
+    return None
 
 
 class TrendsMCPError(Exception):
@@ -97,7 +112,7 @@ def _fetch_feed(feed_type: str, limit: int) -> list[dict]:
             {
                 "title": title,
                 "source": feed_type,
-                "url": None,
+                "url": _search_url(feed_type, title),
                 # чем выше место в топе (меньше rank), тем больше score_raw
                 "score_raw": float(total - rank + 1),
                 "published_at": as_of,

@@ -60,6 +60,27 @@ def _run_heygen(args: list[str]) -> dict:
         ) from e
 
 
+def _build_prompt(script: str) -> str:
+    """Оборачивает сценарий инструкцией для Video Agent.
+
+    У HeyGen video-agent create нет отдельного поля "точный сценарий" — только
+    --prompt, который агент по умолчанию трактует как творческое задание и пишет
+    текст заново ("agent handles scripting" — так и написано в его же описании).
+    Поэтому явно требуем использовать текст дословно, а агенту оставляем только
+    работу с визуалом, монтажом и темпом.
+    """
+    return (
+        "The text below in Russian is a FINAL, ALREADY-WRITTEN voiceover script — "
+        "not a topic or a brief. Use it VERBATIM, word for word, as the narration "
+        "the avatar speaks. Do not rewrite, shorten, translate, add an intro, or "
+        "invent any new lines. Your job is only: break it into scenes, pick visuals "
+        "for each line, cast the avatar, and pace the edit around the [пауза] markers "
+        "(each marks a beat/pause in delivery).\n\n"
+        "SCRIPT (use exactly as written):\n"
+        f"{script}"
+    )
+
+
 def submit_video(script: str) -> dict:
     """Отправляет сценарий в HeyGen Video Agent. Не ждёт рендера (20-45 минут).
 
@@ -73,7 +94,7 @@ def submit_video(script: str) -> dict:
     response = _run_heygen(
         [
             "video-agent", "create",
-            "--prompt", script,
+            "--prompt", _build_prompt(script),
             "--avatar-id", HEYGEN_AVATAR_ID,
             "--voice-id", HEYGEN_VOICE_ID,
             "--orientation", "portrait",

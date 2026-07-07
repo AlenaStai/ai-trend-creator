@@ -34,7 +34,8 @@ SYSTEM_PROMPT = f"""Ты пишешь виральные сценарии для
 
 {STYLE_GUIDE}
 
-Тебе даётся тренд и его анализ (вирусность, релевантность нише, конкуренция, причина тренда).
+Тебе даётся тренд или идея — иногда с готовым анализом вирусности, иногда просто идея
+от автора канала, который сам уверен, что зайдёт, без дополнительного анализа.
 На основе этого построй короткое видео для Shorts/Reels (30-60 секунд озвучки).
 
 Собери четыре элемента:
@@ -64,7 +65,7 @@ class ContentGenerationError(Exception):
     """Ошибка генерации контента через Claude API."""
 
 
-def generate_content(trend: dict, analysis: dict) -> dict:
+def _call_claude(user_content: str) -> dict:
     """Возвращает пакет текстового контента.
 
     {
@@ -75,15 +76,6 @@ def generate_content(trend: dict, analysis: dict) -> dict:
     }
     """
     client = anthropic.Anthropic()
-
-    user_content = (
-        f"Тренд: {trend.get('title')}\n"
-        f"Источник: {trend.get('source')}\n"
-        f"Причина тренда: {analysis.get('trend_reason')}\n\n"
-        f"Оценка вирусности: {analysis.get('virality_label')} — {analysis.get('virality_reason')}\n"
-        f"Релевантность нише: {analysis.get('relevance_score')}/10 — {analysis.get('relevance_reason')}\n"
-        f"Конкуренция: {analysis.get('competition_note')}\n"
-    )
 
     try:
         response = client.messages.create(
@@ -105,3 +97,30 @@ def generate_content(trend: dict, analysis: dict) -> dict:
 
     text = next(block.text for block in response.content if block.type == "text")
     return json.loads(text)
+
+
+def generate_content(trend: dict, analysis: dict) -> dict:
+    """Генерирует сценарий по тренду с готовым анализом (обычная цепочка Trends → Analyze)."""
+    user_content = (
+        f"Тренд: {trend.get('title')}\n"
+        f"Источник: {trend.get('source')}\n"
+        f"Причина тренда: {analysis.get('trend_reason')}\n\n"
+        f"Оценка вирусности: {analysis.get('virality_label')} — {analysis.get('virality_reason')}\n"
+        f"Релевантность нише: {analysis.get('relevance_score')}/10 — {analysis.get('relevance_reason')}\n"
+        f"Конкуренция: {analysis.get('competition_note')}\n"
+    )
+    return _call_claude(user_content)
+
+
+def generate_content_from_idea(idea: str) -> dict:
+    """Генерирует сценарий сразу по идее автора — без анализа вирусности.
+
+    Для случаев, когда автор сам уверен, что тема зайдёт, и не хочет ждать оценку
+    Claude во вкладке Analyze — например, если она разошлась с его собственным чутьём.
+    """
+    user_content = (
+        "Идея для видео от автора канала — отдельного анализа вирусности не делали, "
+        "автор сам уверен, что тема зайдёт:\n"
+        f"{idea}"
+    )
+    return _call_claude(user_content)
