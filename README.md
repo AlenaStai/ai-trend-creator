@@ -166,6 +166,11 @@ streamlit run app.py
    и текстовый пакет (`content.md`) вместе в `export_output/<таймстамп>/`.
    ![экспорт и загрузка видео](images/финальная%20страница%20скачать%20видео.png)
    ![video result](videos/copy_2BD830D6-E5BA-482D-981F-F41C569018C9.mp4)
+   ## 🎬 Видео-демонстрация
+   
+Результат работы AI Trend Creator:
+
+🔗 **Смотреть видео:** https://drive.google.com/file/d/1npn-w6qIGYwAYXzCJmCB-26UzkMlBg7B/view?usp=sharing  
    ![кадр 1](images/кадр%201.png)
    ![кадр 2](images/кадр%202.png)
    ![кадр 3](images/кадр%203.png)
