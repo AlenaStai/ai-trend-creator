@@ -167,6 +167,7 @@ streamlit run app.py
    ![экспорт и загрузка видео](images/финальная%20страница%20скачать%20видео.png)
    ![video result](videos/copy_2BD830D6-E5BA-482D-981F-F41C569018C9.mp4)
    ![кадр 1](images/кадр%201.png)
+   ![кадр 2](images/кадр%202.png)
 
 ### Быстрый запуск
 
