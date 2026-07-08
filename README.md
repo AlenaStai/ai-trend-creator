@@ -169,6 +169,7 @@ streamlit run app.py
    ![кадр 1](images/кадр%201.png)
    ![кадр 2](images/кадр%202.png)
    ![кадр 3](images/кадр%203.png)
+   ![кадр 3](images/кадр%204.png)
 
 ### Быстрый запуск
 
