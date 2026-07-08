@@ -168,6 +168,7 @@ streamlit run app.py
    ![video result](videos/copy_2BD830D6-E5BA-482D-981F-F41C569018C9.mp4)
    ![кадр 1](images/кадр%201.png)
    ![кадр 2](images/кадр%202.png)
+   ![кадр 3](images/кадр%203.png)
 
 ### Быстрый запуск
 
